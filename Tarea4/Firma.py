@@ -1,9 +1,6 @@
-#Practica de algoritmo RSA
-
 #Imports
-import Crypto.Util.number
 import hashlib
-from Crypto.Hash import SHA256
+import Crypto.Util.number
 
 #Numero de bits
 bits = 1024
@@ -39,28 +36,22 @@ e = 65337
 
 #Calcular la llave privada de Alice y Bob
 dA = Crypto.Util.number.inverse(e, phiA)
-print("dA: ", dA, "\n")
-
 dB = Crypto.Util.number.inverse(e, phiB)
-print("dB: ", dB, "\n")
 
-#Ciframos el mensaje
-msg='Hola Feo'
-print("Mensaje Original: ", msg, "\n")
-print("Longitud de mensaje en bytes", len(msg.encode('utf-8')))
+msg="Hola Mundo"
+msg_hash = hashlib.sha256(msg.encode()).digest()
 
-#Convertir el mensaje a numero
-m = int.from_bytes(msg.encode('utf-8'), byteorder='big')
-print("Mensaje convertido en entero: ", m, "\n")
+#Convertir Hash a Entero
+hash_int = int.from_bytes(msg_hash, byteorder='big')
+print("Mensaje hash int:",hash_int,"\n")
 
-#Ciframos el mensaje
-c = pow(m,e,nB)
-print("Mensaje cifrado: ", c, "\n")
+c = pow(hash_int,dA,nA)
+print("Mensaje Cifrado:",c,"\n")
 
-#Desciframos el mensaje
-des = pow(c, dB, nB)
-print("Mensaje descifrado: ", des, "\n")
+des = pow(c,e,nA)
+print("Verificacion de hash int:",des,"\n")
 
-#Convertimos el mensaje de numero a texto
-msg_final = int.to_bytes(des, len(msg), byteorder='big').decode('utf-8')
-print("Mensaje final: ", msg_final, "\n")
+if hash_int==des:
+    print("El mensaje fue firmado por Alice")
+else:
+    print("El mensaje no fue firmado por Alice")
